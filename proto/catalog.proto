@@ -443,6 +443,7 @@ message Table {
     CDC_TABLE_TYPE_MONGODB = 4;
     CDC_TABLE_TYPE_MONGO = 4 [deprecated = true];
     CDC_TABLE_TYPE_CITUS = 5;
+    CDC_TABLE_TYPE_ORACLE = 6;
   }
 
   uint32 id = 1;

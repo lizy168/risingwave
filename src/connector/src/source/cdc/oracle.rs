@@ -16,4 +16,7 @@ use crate::source::cdc::{CdcSourceRuntimeFlags, Oracle};
 
 // ------- Runtime flags -------
 
-impl CdcSourceRuntimeFlags for Oracle {}
+impl CdcSourceRuntimeFlags for Oracle {
+    const CAN_BACKFILL: bool = true;
+    const NEEDS_NON_EMPTY_INITIAL_OFFSET: bool = true;
+}
