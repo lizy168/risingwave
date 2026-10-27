@@ -35,6 +35,7 @@ use crate::controller::fragment::InflightFragmentInfo;
 pub(super) enum BoundedLoadAction {
     ListFinish {
         database_id: DatabaseId,
+        job_id: JobId,
         source_id: SourceId,
     },
     Complete {
@@ -148,6 +149,7 @@ impl BoundedLoadTracker {
 
                     BoundedLoadAction::ListFinish {
                         database_id: self.database_id,
+                        job_id: self.job_id,
                         source_id: self.source_id,
                     }
                 })
@@ -173,6 +175,10 @@ impl BoundedLoadTracker {
         };
 
         self.actions.extend(action);
+    }
+
+    pub fn has_actor(&self, actor_id: ActorId) -> bool {
+        self.listers.contains(&actor_id) || self.readers.contains(&actor_id)
     }
 
     /// Takes the queued actions, once their checkpoint commits.
@@ -445,6 +451,7 @@ mod tests {
     fn list_finish() -> BoundedLoadAction {
         BoundedLoadAction::ListFinish {
             database_id: DATABASE_ID,
+            job_id: JOB_ID,
             source_id: SOURCE_ID,
         }
     }

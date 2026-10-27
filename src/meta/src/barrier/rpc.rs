@@ -974,7 +974,7 @@ impl PartialGraphRecoverer<'_> {
                                 .unwrap_or_default(),
                             status,
                             cdc_table_backfill_tracker,
-                            bounded_load_tracker: None,
+                            bounded_load_trackers: Default::default(),
                         },
                     ))
                 })

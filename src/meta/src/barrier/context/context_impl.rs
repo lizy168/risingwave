@@ -322,10 +322,11 @@ impl GlobalBarrierWorkerContext for GlobalBarrierWorkerContextImpl {
         match action {
             BoundedLoadAction::ListFinish {
                 database_id,
+                job_id,
                 source_id,
             } => {
                 self.bounded_load_manager
-                    .list_finish(database_id, source_id);
+                    .list_finish(database_id, job_id, source_id);
             }
             BoundedLoadAction::Complete { job_id, source_id } => {
                 self.bounded_load_manager

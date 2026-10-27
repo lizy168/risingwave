@@ -859,6 +859,37 @@ impl CatalogController {
             }
         };
 
+        if matches!(
+            streaming_job,
+            StreamingJob::MaterializedView(_) | StreamingJob::Sink(..)
+        ) {
+            let sources = Source::find()
+                .select_only()
+                .columns([source::Column::SourceId, source::Column::IngestMode])
+                .filter(
+                    source::Column::SourceId.is_in(dependencies.iter().map(|id| id.as_source_id())),
+                )
+                .into_tuple::<(SourceId, Option<SourceIngestMode>)>()
+                .all(&txn)
+                .await?;
+
+            for (source_id, ingest_mode) in sources {
+                let ingest_mode =
+                    IngestMode::from_proto(ingest_mode.map(|mode| mode.to_protobuf()).as_ref())?;
+
+                if ingest_mode.is_bounded() {
+                    BoundedJob::insert(bounded_job::ActiveModel {
+                        job_id: Set(streaming_job.id()),
+                        source_id: Set(source_id),
+                        status: Set(bounded_job::BoundedJobStatus::Loading),
+                        completed_at: Set(None),
+                    })
+                    .exec(&txn)
+                    .await?;
+                }
+            }
+        }
+
         // collect dependent secrets.
         dependencies.extend(
             streaming_job

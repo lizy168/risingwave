@@ -85,12 +85,12 @@ impl BoundedLoadManager {
         }
     }
 
-    /// Schedules `ListFinish` for the load of `source_id` once every list actor has reported
-    /// `ListFinished`.
-    pub fn list_finish(&self, database_id: DatabaseId, source_id: SourceId) {
+    /// Schedules `ListFinish` for the load of `source_id` in `job_id` once every list actor has
+    /// reported `ListFinished`.
+    pub fn list_finish(&self, database_id: DatabaseId, job_id: JobId, source_id: SourceId) {
         if let Err(error) = self
             .barrier_scheduler
-            .run_command_no_wait(database_id, Command::ListFinish { source_id })
+            .run_command_no_wait(database_id, Command::ListFinish { job_id, source_id })
         {
             tracing::warn!(
                 database_id = %database_id,
